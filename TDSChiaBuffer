@@ -1,0 +1,77 @@
+import os,sys,shutil,glob,time
+
+#This is my first script, credits to WolfRage76 for building a similiar script, and motivating me to learn how to make my own.
+#Checks all sources/destinations for access writes and space, moves files from sources to destinations.
+#Thank you, TheDarkShaman. You can reach me in the Chia/Swar discords for comment/question.
+#BTC 3CLZ36YC2n1H1qnRCFYu7jZdooVGm1bch7
+#ETH 0xfBb329c440Baf16444730b525E0588b31D372472
+#LTC MWMzxSknpJtgnpUHme1LVAEtGabGmm9mNX
+
+##!!~~Set variables below~~!!##
+sources=["/home/michael1/Documents/Mybuffer/source/","/home/michael1/Documents/Mybuffer/source1/"] #Add as many as you want.
+destinations=["/media/michael1/test1/","/media/michael1/test2/","/media/michael1/test3/"] #Add as many as you want.
+minsize=1 #Set to minimum size in GB remaining before attempting copy to destination.
+ext="txt" #"plot" or "txt" or "py" etc...
+##!!~~Set variables above~~!!##
+
+def sourceanddestinationcheck():
+  setupchecks=0
+  pathlist=sources+destinations
+  sourcepath=sources[0]
+  print("****Checking Source&Destination Settings****")
+  print("Drives:", pathlist)
+  while setupchecks<len(pathlist):		
+    print("Checking",sourcepath)
+    if not os.path.isdir(sourcepath):
+      sys.exit("Path does not exist:FAIL-Exiting")
+    if not (sourcepath[0]=="/")&(sourcepath[-1]=="/"):
+      sys.exit("Slash check:FAIL-Exiting: directories must begin and end with / EXAMPLE: /mnt/md0/")
+    if not os.access(sourcepath, os.R_OK)and os.access(sourcepath, os.W_OK)and os.access(sourcepath, os.X_OK | os.W_OK):  
+      sys.exit("Read/Write/Access check:FAIL-Exiting")    
+    print(sourcepath,"Drive Check:PASS")
+    setupchecks = setupchecks+1
+    print("Total of Drives checked:", setupchecks)
+    if setupchecks!=len(pathlist):
+      sourcepath=pathlist[0+setupchecks]
+    else:
+      print("All pathes checked successfully")
+      setdestinationdrive()
+
+def setdestinationdrive():
+  print("****Setting destination drive****")
+  while len(destinations)!=0:  
+      print("Current list:",destinations)
+      destination=(destinations[0])
+      print("Current destination:",destination)
+      total, used, free = shutil.disk_usage(destination)
+      print("Free space=",(free // (2 ** 30)),"GB")
+      if (free // (2 ** 30)) >= minsize:
+        print("Space check:PASS!")
+        print("****Checking for files to move****")
+        while (free// (2 ** 30)) >= minsize:
+         for source in sources:
+               time.sleep(2)
+               for file in glob.glob(source+"*."+ext):
+                 if (free// (2 ** 30)) >= minsize: 
+                   try:
+                     shutil.move(file, destination)
+                   except shutil.SameFileError:
+                     print("Same file Error")
+                   except PermissionError:
+                     print("Permission Error")
+                   except:
+                     print("Error occurred while copying file.")
+                   finally:
+                     print(file,"moved to",destination)
+                     time.sleep(2)
+                     total, used, free = shutil.disk_usage(destination)
+                     print(destination,"Free space=",(free // (2 ** 30)),"GB")
+                     print("****Checking for files to move****")
+      else:
+        destinations.pop(0)
+        print(destination,"full, switching destination.")
+      if len(destinations)==0:  
+       sys.exit("All drives are full-Exiting")
+       
+sourceanddestinationcheck()       
+
