@@ -53,6 +53,7 @@ def setdestinationdrive():
                time.sleep(2)
                for file in glob.glob(source+"*."+ext):
                  if (free// (2 ** 30)) >= minsize: 
+                   print("File found:",file)
                    try:
                      shutil.move(file, destination)
                    except shutil.SameFileError:
