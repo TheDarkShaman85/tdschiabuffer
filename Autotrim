@@ -1,0 +1,8 @@
+#I was having issues with trim so I made a quick script just to auto-trim. If I don't run this my plotter slows down over time.
+while:
+do
+  sudo fstrim -v /media/michael/plots1
+  echo "$(date +%H:%M) [Next Trim in 30 minutes!]"
+  sleep 1800
+done
+  
