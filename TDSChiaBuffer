@@ -1,17 +1,19 @@
 import os,sys,shutil,glob,time
 
 #This is my first script, credits to WolfRage76 for building a similiar script, and motivating me to learn how to make my own.
+#I was constantly mistyping drives, and would find the error later, so I tried to stupid proof the process for myself.
 #Checks all sources/destinations for access writes and space, moves files from sources to destinations.
 #Thank you, TheDarkShaman. You can reach me in the Chia/Swar discords for comment/question.
 #BTC 3CLZ36YC2n1H1qnRCFYu7jZdooVGm1bch7
 #ETH 0xfBb329c440Baf16444730b525E0588b31D372472
 #LTC MWMzxSknpJtgnpUHme1LVAEtGabGmm9mNX
+#Future goals: Disable ploter when drives are full.
 
 ##!!~~Set variables below~~!!##
-sources=["/home/michael1/Documents/Mybuffer/source/","/home/michael1/Documents/Mybuffer/source1/"] #Add as many as you want.
-destinations=["/media/michael1/test1/","/media/michael1/test2/","/media/michael1/test3/"] #Add as many as you want.
-minsize=1 #Set to minimum size in GB remaining before attempting copy to destination.
-ext="txt" #"plot" or "txt" or "py" etc...
+sources=["/home/michael1/Documents/Mybuffer/source/","/home/michael1/Documents/Mybuffer/source1/"] #Change/Add as many as you want.
+destinations=["/media/michael1/test1/","/media/michael1/test2/","/media/michael1/test3/"] #Change/Add as many as you want.
+minsize=130 #Set to minimum size in GB remaining before attempting copy to destination.
+ext="plot" #"plot" or "txt" or "py" etc...
 ##!!~~Set variables above~~!!##
 
 def sourceanddestinationcheck():
@@ -35,9 +37,9 @@ def sourceanddestinationcheck():
       sourcepath=pathlist[0+setupchecks]
     else:
       print("All pathes checked successfully")
-      setdestinationdrive()
+      checkdestinationandmove()
 
-def setdestinationdrive():
+def checkdestinationandmove():
   print("****Setting destination drive****")
   while len(destinations)!=0:  
       print("Current list:",destinations)
@@ -50,10 +52,13 @@ def setdestinationdrive():
         print("****Checking for files to move****")
         while (free// (2 ** 30)) >= minsize:
          for source in sources:
-               time.sleep(2)
                for file in glob.glob(source+"*."+ext):
                  if (free// (2 ** 30)) >= minsize: 
                    print("File found:",file)
+                   print("Pausing for 10 seconds, CTRL+C to exit.")
+                   time.sleep(10)
+                   print("Moving file do not exit!")
+                   start = time.time()
                    try:
                      shutil.move(file, destination)
                    except shutil.SameFileError:
@@ -63,8 +68,10 @@ def setdestinationdrive():
                    except:
                      print("Error occurred while copying file.")
                    finally:
+                     done = time.time()
+                     elapsed = done - start
+                     print("Move time:",elapsed,"seconds")
                      print(file,"moved to",destination)
-                     time.sleep(2)
                      total, used, free = shutil.disk_usage(destination)
                      print(destination,"Free space=",(free // (2 ** 30)),"GB")
                      print("****Checking for files to move****")
